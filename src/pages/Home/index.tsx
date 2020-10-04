@@ -1,10 +1,10 @@
 import React from 'react';
-import './styles.css'
 
 import BookCard from '../../components/BookCard';
 import books from '../../data/books';
-import { Container, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import Header from '../../components/Header';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {

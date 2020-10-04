@@ -89,7 +89,6 @@ const BookCard: React.FC<Book> = (props) => {
         
                 <main className={classes.bookInfo}>
                     
-                    
                     <img className={classes.image} src={props.cover} alt="Teste"/>
                     <div className="book-text">
                         <Typography variant="body1" color="textPrimary" component="p">

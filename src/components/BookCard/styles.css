@@ -1,9 +1,7 @@
 .book-item {
     background-color: white;
-    
     width: 400px;
     min-width: 300px;
-
     max-height: 400px;
     height: auto;
     margin-bottom: 15px;

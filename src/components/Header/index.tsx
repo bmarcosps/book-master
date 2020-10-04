@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, Icon, makeStyles, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
         maxWidth: '100vw',
         backgroundColor: theme.palette.primary.main,
         overflow: 'hidden',
+        height: '50px',
         zIndex:1
     },
     headerLinks: {
@@ -21,15 +22,22 @@ const useStyles = makeStyles((theme: Theme) =>
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        padding: '0 20 0 20',
         listStyle: 'none',
-        color: theme.palette.primary.contrastText
+        color: theme.palette.primary.contrastText,
+        margin: 0
     },
     headerLink: {
         textAlign: 'center',
         textDecoration: 'none',
-        color: theme.palette.primary.contrastText
+        color: theme.palette.primary.contrastText,
+        padding: 10
   
+    },
+    headerLinkLi:{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'row',
     }
     
   }),
@@ -42,7 +50,11 @@ const Header = () => {
     <header className={classes.headerContainer} >
     
         <ul className={classes.headerLinks}>
-            <li><Link className={classes.headerLink} to='/'>BookMaster</Link></li>
+            <li className={classes.headerLinkLi}>
+              <Link className={classes.headerLink} to='/'>
+                 BookMaster
+              </Link>
+              </li>
         </ul>
         
     </header>

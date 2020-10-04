@@ -1,25 +1,25 @@
+import { Container, createStyles, makeStyles, Theme } from '@material-ui/core';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Routes from './Routes';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+      backgroundColor: theme.palette.grey[300],
+      minHeight: '100vh',
+      boxShadow: theme.shadows[6],
+    },
+  }),
+);
+
 
 function App() {
+  const classes = useStyles();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className={classes.root} maxWidth="lg">
+      <Routes/>
+    </Container>
   );
 }
 

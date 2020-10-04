@@ -1,9 +1,7 @@
 import { Card, CardActionArea, createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Book from '../../models/Book';
-
-import './styles.css'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,6 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 5,
         minHeight: 50,
         color: theme.palette.secondary.contrastText,
         backgroundColor: theme.palette.secondary.light,
@@ -74,14 +73,17 @@ const useStyles = makeStyles((theme: Theme) =>
         width: '100%',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
+        paddingLeft: 15,
+        paddingRight: 15
     }
   }),
 );
 
 const BookCard: React.FC<Book> = (props) => {
     const classes = useStyles();
-    const isTaken = false;
+    const [reserved, setReserved] = useState(localStorage.getItem('book_'+ props.id.toString()));
+
     return (
         <Link className={classes.link}  to={'/' + props.id.toString()}>
         <Card className={classes.card} elevation={3}>
@@ -114,17 +116,17 @@ const BookCard: React.FC<Book> = (props) => {
                     </div>
                     
                 </main>
-                {isTaken?
+                {reserved != null ?
                     <footer className={classes.bookStatusTaken}>
                         <Typography variant="body1"  component="p" gutterBottom>
                             Livro emprestado
                         </Typography>
                         <div className={classes.bookOwner}>
-                        <Typography variant="body2" component="p" gutterBottom>
-                            Fulano de tal
+                        <Typography noWrap={true} variant="body2" component="p" gutterBottom>
+                            {JSON.parse(reserved).name}
                         </Typography>
                         <Typography variant="body2" component="p" gutterBottom>
-                            04/10/2020
+                            {JSON.parse(reserved).date}
                         </Typography>
                         </div>
                     </footer>

@@ -1,78 +1,52 @@
 import React from 'react';
-import './styles.css';
-
-import { Link, useLocation } from 'react-router-dom';
-import { Breadcrumbs, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
-
-import HomeIcon from '@material-ui/icons/Home';
-import Book from '@material-ui/icons/Book';
-
+import { Link } from 'react-router-dom';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    link: {
-      display: 'flex',
-      textDecoration: 'none',
-      color: theme.palette.info.main
+    headerContainer: {
+        position: 'fixed',
+        top:0,
+        left: 0,
+        width: '100vw',
+        maxWidth: '100vw',
+        backgroundColor: theme.palette.primary.main,
+        overflow: 'hidden',
+        zIndex:1
     },
-    links: {
-      paddingTop: 20,
-      paddingBottom: 20,
-
+    headerLinks: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        padding: '0 20 0 20',
+        listStyle: 'none',
+        color: theme.palette.primary.contrastText
     },
-    icon: {
-      marginRight: theme.spacing(0.5),
-      width: 20,
-      height: 20,
-    },
+    headerLink: {
+        textAlign: 'center',
+        textDecoration: 'none',
+        color: theme.palette.primary.contrastText
+  
+    }
     
   }),
 );
 
-interface HeaderProps {
-  path?: string[]
-}
-
-const Header: React.FC<HeaderProps> = (props) => {
+const Header = () => {
   const classes = useStyles();
-  
+
   return (
+    <header className={classes.headerContainer} >
     
-    <Breadcrumbs className={classes.links} aria-label="breadcrumb">
-      <Link color="inherit" to="/" className={classes.link}>
-        <HomeIcon className={classes.icon} />
-        Home
-      </Link>
-      {
-        props.path ?
-        props.path.map( pt => { return (
-          <Typography color="textPrimary" className={classes.link}>
-            <Book className={classes.icon} />
-            {pt}
-          </Typography>)
-        }) : ""
-      }
-    </Breadcrumbs>
+        <ul className={classes.headerLinks}>
+            <li><Link className={classes.headerLink} to='/'>BookMaster</Link></li>
+        </ul>
+        
+    </header>
   );
 }
 
 export default Header;
-
-/*
-<Link color="inherit" to="/" className={classes.link}>
-        <HomeIcon className={classes.icon} />
-        Material-UI
-      </Link>
-      <Link
-        color="inherit"
-        href="/getting-started/installation/"
-        className={classes.link}
-      >
-        <WhatshotIcon className={classes.icon} />
-        Core
-      </Link>
-
-      <Typography color="textPrimary" className={classes.link}>
-        <GrainIcon className={classes.icon} />
-        Breadcrumb
-      </Typography>*/

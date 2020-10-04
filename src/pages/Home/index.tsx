@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import BookCard from '../../components/BookCard';
 import books from '../../data/books';
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
-import Header from '../../components/Header';
+import CustomBreadcrumbs from '../../components/CustomBreadcrumbs';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,9 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Home = () => {
   const classes = useStyles();
+  
   return (
     <div className={classes.root}>
-      <Header/>
+      <CustomBreadcrumbs/>
       <Typography color='primary' variant="h3" >BookMaster</Typography>
       <Typography color='textPrimary' variant="h5" gutterBottom>Sua biblioteca de livros online</Typography>
       <Typography color='textPrimary' variant="body1" gutterBottom> Clique nos exemplares disponíveis abaixo para ver mais informações!</Typography>

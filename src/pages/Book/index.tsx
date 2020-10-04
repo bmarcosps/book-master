@@ -1,144 +1,245 @@
-import { Button, createStyles, Grid, makeStyles,  Modal,  Theme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core';
+import {
+	Button,
+	createStyles,
+	Grid,
+	makeStyles,
+	Theme,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	TextField,
+	Typography,
+} from '@material-ui/core';
+import { format } from 'date-fns';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../../components/Header';
+import CustomBreadcrumbs from '../../components/CustomBreadcrumbs';
 import books from '../../data/books';
+import BookReservation from '../../models/BookReservation';
 
 interface ParamTypes {
-  id: string
+	id: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    },
-    image: {
-      width:"100%"
-    }
-  })
+	createStyles({
+		root: {
+			flexGrow: 1,
+		},
+
+		paper: {
+			padding: theme.spacing(2),
+			textAlign: 'center',
+			color: theme.palette.text.secondary,
+		},
+		image: {
+			width: '100%',
+		},
+	})
 );
 
-
 const Book = () => {
-  const { id } = useParams<ParamTypes>();
-  const book = books.find(b => b.id === Number(id));
-  const classes = useStyles();
-  const taken = true;
-  const [open, setOpen] = useState(false);
-  
-  const handleOpen = () => {
-    setOpen(true);
-  }
+	const classes = useStyles();
 
-  const handleClose = () => {
-    setOpen(false);
-  }
+	const { id } = useParams<ParamTypes>();
 
+	const book = books.find((b) => b.id === Number(id));
 
-  if(book) {
-    return (
-        <div className={classes.root} >
-          <Header path={[book.title]}/>
+	const [openReservation, setOpenReservation] = useState(false);
+	const [openDevolution, setOpenDevolution] = useState(false);
 
-          <Grid container spacing={3} >
-            <Grid item xs={12} sm={4}>
-              <img className={classes.image} src={book.cover} alt="Teste"/>
-            </Grid>
-            <Grid className="book-text" item xs={12} sm={8}>
-              
-                <strong>Título</strong><p>{book.title}</p>
-                <strong>Autor</strong><p>{book.authors.map(a => a + "; ")}</p>
-                <strong>Idioma</strong><p>{book.idiom}</p>
+	const [error, setError] = useState(false);
+	const [name, setName] = useState('');
 
-                <strong>Resumo</strong><p>{book.summary}</p>
-                <strong>Páginas</strong><p>{book.pages}</p>
+	const [reserved, setReserved] = useState(localStorage.getItem('book_' + id) != null);
 
-                <strong>Palavras-chave</strong><p>{book.keywords.map(a => a + "; ")}</p>
-              
-            </Grid>
-            <Grid container spacing={3} 
-              direction="row"
-              justify="center"
-              alignItems="center">
-                {taken?
-                <div>
-                  <Button variant="contained" color="secondary" onClick={handleOpen}>Devolver</Button>
-                  <Dialog open={open} onClose={handleClose} 
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  >
+	const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setName(event.target.value);
+	};
 
-                  <DialogTitle id="alert-dialog-title">Devolver livro: {book.title} ?</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                     Você quer mesmo devolver o livro?
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose} color="secondary">
-                      Cancelar
-                    </Button>
-                    <Button onClick={handleClose} color="primary">
-                      Confirmar
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-                </div>
-                
-                
-                :
-                <div>
-                <Button variant="contained" color="primary" onClick={handleOpen}>Reservar</Button>
-                <Dialog open={open} onClose={handleClose} 
-                aria-labelledby="form-dialog-title">
+	const handleOpenReservation = () => {
+		setOpenReservation(true);
+	};
 
-                  <DialogTitle id="form-dialog-title">Reservar livro: {book.title}</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                     Para reservar um livro você deve informar seu nome e confirmar.
-                    </DialogContentText>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      id="name"
-                      label="Nome completo"
-                      type="text"
-                      fullWidth
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose} color="secondary">
-                      Cancelar
-                    </Button>
-                    <Button onClick={handleClose} color="primary">
-                      Confirmar
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-                </div>
-                }
-            </Grid>
-            
-            
-          </Grid>
-        </div>
-      );
-  } else {
-    return (
-    <div>
-      <h3>
-        A página <code>{id}</code> não foi encontrada.
-      </h3>
-    </div>
-    );
-  }
-}
+	const handleCloseReservation = () => {
+		setName('');
+		setOpenReservation(false);
+	};
+
+	const handleOpenDevolution = () => {
+		setOpenDevolution(true);
+	};
+
+	const handleCloseDevolution = () => {
+		setName('');
+		setOpenDevolution(false);
+	};
+
+	const handleSubmitDevolution = () => {
+		localStorage.removeItem('book_' + id);
+		setReserved(false);
+		setOpenDevolution(false);
+	};
+
+	const handleSubmitReservation = () => {
+		if (name === '') {
+			setError(true);
+			return;
+		}
+
+		const bookRes = new BookReservation(Number(id), name, format(new Date(), 'dd/MM/yyyy'));
+		localStorage.setItem('book_' + id, JSON.stringify(bookRes));
+		setReserved(true);
+		setOpenReservation(false);
+	};
+
+	if (book) {
+		const devolutionDialog = (
+			<Dialog
+				open={openDevolution}
+				onClose={handleCloseDevolution}
+				aria-labelledby='alert-dialog-title'
+				aria-describedby='alert-dialog-description'
+			>
+				<DialogTitle id='alert-dialog-title'>Devolver livro: {book.title} ?</DialogTitle>
+				<DialogContent>
+					<DialogContentText id='alert-dialog-description'>
+						Você quer mesmo devolver o livro?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleCloseDevolution} color='secondary'>
+						Cancelar
+					</Button>
+					<Button onClick={handleSubmitDevolution} color='primary'>
+						Confirmar
+					</Button>
+				</DialogActions>
+			</Dialog>
+		);
+
+		const reservationDialog = (
+			<Dialog open={openReservation} onClose={handleCloseReservation} aria-labelledby='form-dialog-title'>
+				<DialogTitle id='form-dialog-title'>Reservar livro: {book.title}</DialogTitle>
+
+				<DialogContent>
+					<DialogContentText>
+						Para reservar um livro você deve informar seu nome e confirmar.
+					</DialogContentText>
+					<form id='name-form' onSubmit={handleSubmitReservation}>
+						<TextField
+							autoFocus
+							margin='dense'
+							id='name'
+							label='Nome completo'
+							placeholder='Nome completo'
+							type='text'
+							fullWidth
+							required
+							error={error}
+							onChange={handleNameChange}
+							value={name}
+						/>
+					</form>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleCloseReservation} color='secondary'>
+						Cancelar
+					</Button>
+					<Button form='name-form' type='submit' color='primary'>
+						Confirmar
+					</Button>
+				</DialogActions>
+			</Dialog>
+		);
+
+		return (
+			<div className={classes.root}>
+				<CustomBreadcrumbs path={[book.title]} />
+
+				<Grid container spacing={3}>
+					<Grid item xs={12} sm={4}>
+						<img className={classes.image} src={book.cover} alt='Teste' />
+					</Grid>
+					<Grid className='book-text' item xs={12} sm={8}>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Título
+						</Typography>
+						<Typography variant='body2' color='textSecondary' component='p' gutterBottom>
+							{book.title}
+						</Typography>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Autor
+						</Typography>
+						<Typography variant='body2' color='textSecondary' component='p' gutterBottom>
+							{book.authors.map((a) => a + '; ')}
+						</Typography>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Idioma
+						</Typography>
+						<Typography variant='body2' color='textSecondary' component='p' gutterBottom>
+							{book.idiom}
+						</Typography>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Resumo
+						</Typography>
+						<Typography variant='body2' color='textSecondary' align='justify' component='p' gutterBottom>
+							{book.summary}
+						</Typography>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Páginas
+						</Typography>
+						<Typography variant='body2' color='textSecondary' component='p' gutterBottom>
+							{book.pages}
+						</Typography>
+						<Typography variant='body1' color='textPrimary' component='p'>
+							Palavras-chave
+						</Typography>
+						<Typography variant='body2' color='textSecondary' component='p' gutterBottom>
+							{book.keywords.map((a) => a + '; ')}
+						</Typography>
+					</Grid>
+
+					<Grid container spacing={3} direction='row' justify='center' alignItems='center'>
+						<Grid item xs={12} sm={6}>
+							<Button
+								fullWidth={true}
+								disabled={reserved}
+								variant='contained'
+								color='primary'
+								onClick={handleOpenReservation}
+							>
+								Reservar
+							</Button>
+							{reservationDialog}
+						</Grid>
+						<Grid item xs={12} sm={6}>
+							<Button
+								fullWidth={true}
+								disabled={!reserved}
+								variant='contained'
+								color='secondary'
+								onClick={handleOpenDevolution}
+							>
+								Devolver
+							</Button>
+							{devolutionDialog}
+						</Grid>
+					</Grid>
+				</Grid>
+			</div>
+		);
+	} else {
+		return (
+			<div>
+				<h3>
+					A página <code>{id}</code> não foi encontrada.
+				</h3>
+			</div>
+		);
+	}
+};
 
 export default Book;

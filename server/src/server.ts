@@ -3,6 +3,9 @@ import express from "express";
 import bodyParser from 'body-parser';
 import low from 'lowdb';
 import FileAsync from 'lowdb/adapters/FileAsync';
+
+var cors = require('cors')
+
 import Book from "./models/Book";
 import BookReservation from "./models/BookReservation";
 
@@ -108,6 +111,7 @@ const json = [
   ]
 
 const app = express();
+app.use(cors())
 app.use(bodyParser.json())
 
 const adapter = new FileAsync<Database>('db.json')
@@ -147,12 +151,17 @@ low(adapter)
                 .get('bookReservations')
                 .find({id: id})
                 .value();
-    
-        res.send(reserv);
+                
+        if(reserv){
+            res.send(reserv);
+        } else {
+            res.status(404).json({
+                error: 'Reserva não encontrada'
+            })
+        }
     })
 
     app.post('/reservations', (req, res) => {
-
         const reservation:BookReservation = req.body;
         
         const findRes = db
